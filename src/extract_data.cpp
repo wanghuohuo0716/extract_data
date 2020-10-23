@@ -3,26 +3,31 @@
 #include "sensor_msgs/Imu.h"
 #include "geometry_msgs/TwistStamped.h"
 #include "tf2_msgs/TFMessage.h"
+#include "tf/transform_broadcaster.h"
 #include <fstream>
 #include <iomanip>
 
 // 1.需要手动创建txt文件,代码无法自动创建
 // 2.txt的路径为绝对路径,相对路径似乎有问题,不过不影响
 
-void tf_callback(const tf2_msgs::TFMessage msg){
+void tf_callback(const tf2_msgs::TFMessage& msg){
     static ros::Time tf_time = msg.transforms[0].header.stamp;
+    tf::Quaternion q(msg.transforms[0].transform.rotation.x,msg.transforms[0].transform.rotation.y,msg.transforms[0].transform.rotation.z,msg.transforms[0].transform.rotation.w);
+    double yaw,pitch,roll;
+    tf::Matrix3x3(q).getRPY(roll,pitch,yaw);
     static int count_tf=0;
     count_tf++;
     ROS_INFO("loading tf data...");
-    std::ofstream f("/home/wanghuohuo/catkin_clion/src/my_package/data/tf_data.txt", std::ios::app); // 保存新内容
+    std::ofstream f("/home/wanghuohuo/catkin_clion/src/extract_data/data/tf_data.txt", std::ios::app); // 保存新内容
     f<<std::setprecision(10)<<msg.transforms[0].header.stamp-tf_time<<" "\
+                                <<yaw<<" "<<pitch<<" "<<roll<<" "\
                                 <<msg.transforms[0].transform.translation.x<<" "<<msg.transforms[0].transform.translation.y<<" "<<msg.transforms[0].transform.translation.z<<" "\
                                 <<msg.transforms[0].transform.rotation.x<<" "<<msg.transforms[0].transform.rotation.y<<" "<<msg.transforms[0].transform.rotation.z<<" "<<msg.transforms[0].transform.rotation.w<<" "\
                                 <<count_tf<<std::endl;
     f.close();
 }
 
-void gps_callback(const sensor_msgs::NavSatFix msg){
+void gps_callback(const sensor_msgs::NavSatFix& msg){
     static ros::Time gps_time = msg.header.stamp;
     static int count_gps=0;
     count_gps++;
@@ -35,22 +40,21 @@ void gps_callback(const sensor_msgs::NavSatFix msg){
     f.close();
 }
 
-void imu_callback(const sensor_msgs::Imu msg){
+void imu_callback(const sensor_msgs::Imu& msg){
     static ros::Time imu_time = msg.header.stamp;
     static int count_imu=0;
     count_imu++;
     ROS_INFO("loading imu data...");
     std::ofstream f("/home/wanghuohuo/catkin_clion/src/extract_data/data/imu_data.txt", std::ios::app); // 保存新内容
-
     f<<std::setprecision(10)<<msg.header.stamp-imu_time<<" "\
-                                <<msg.orientation.x<<" "<<msg.orientation.x<<" "<<msg.orientation.x<<" "<<msg.orientation.w<<" "\
+                                <<msg.orientation.x<<" "<<msg.orientation.y<<" "<<msg.orientation.z<<" "<<msg.orientation.w<<" "\
                                 <<msg.angular_velocity.x<<" "<<msg.angular_velocity.y<<" "<<msg.angular_velocity.z<<" "\
                                 <<msg.linear_acceleration.x<<" "<<msg.linear_acceleration.y<<" "<<msg.linear_acceleration.z<<" "\
                                 <<count_imu<<std::endl;
     f.close();
 }
 
-void vel_callback(const geometry_msgs::TwistStamped msg){
+void vel_callback(const geometry_msgs::TwistStamped& msg){
     static ros::Time vel_time = msg.header.stamp;
     static int count_vel=0;
     count_vel++;
@@ -80,6 +84,7 @@ int main(int argc, char **argv)
     // tf data: x, y, z,是odom坐标系下坐标
     std::ofstream f_tf("/home/wanghuohuo/catkin_clion/src/extract_data/data/tf_data.txt");
     f_tf<<"time_stamp"<<" "\
+        <<"yaw"<<" "<<"pitch"<<" "<<"roll"<<" "\
         <<"translation_x"<<" "<<"translation_y"<<" "<<"translation_z"<<" "\
         <<"rotation_x"<<" "<<"rotation_y"<<" "<<"rotation_z"<<" "<<"rotation_w"<<std::endl;
     f_tf.close();
@@ -115,3 +120,4 @@ int main(int argc, char **argv)
 
     return 0;
 }
+
