@@ -86,13 +86,13 @@ int main(int argc, char **argv)
     f_tf<<"time_stamp"<<" "\
         <<"yaw"<<" "<<"pitch"<<" "<<"roll"<<" "\
         <<"translation_x"<<" "<<"translation_y"<<" "<<"translation_z"<<" "\
-        <<"rotation_x"<<" "<<"rotation_y"<<" "<<"rotation_z"<<" "<<"rotation_w"<<std::endl;
+        <<"rotation_x"<<" "<<"rotation_y"<<" "<<"rotation_z"<<" "<<"rotation_w"<<" "<<"tf_count"<<std::endl;
     f_tf.close();
 
     // gps data: latitude, longitude, altitude
     std::ofstream f_gps("/home/wanghuohuo/catkin_clion/src/extract_data/data/gps_data.txt");
     f_gps<<"time_stamp"<<" "\
-         <<"longitude"<<" "<<"longitude"<<" "<<"altitude"<<std::endl;
+         <<"longitude"<<" "<<"longitude"<<" "<<"altitude"<<" "<<"gps_count"<<std::endl;
     f_gps.close();
 
     // 注意imu data和velocity data的角速度的值是相同的!
@@ -101,14 +101,14 @@ int main(int argc, char **argv)
     f_imu<<"time_stamp"<<" "\
          <<"orientation_x"<<" "<<"orientation_y"<<" "<<"orientation_z"<<" "<<"orientation_w"<<" "\
          <<"angular_x"<<" "<<"angular_y"<<" "<<"angular_z"<<" "\
-         <<"acc_x"<<" "<<"acc_y"<<" "<<"acc_z"<<std::endl;
+         <<"acc_x"<<" "<<"acc_y"<<" "<<"acc_z"<<" "<<"imu_count"<<std::endl;
     f_imu.close();
 
     // velocity data
     std::ofstream f_vel("/home/wanghuohuo/catkin_clion/src/extract_data/data/vel_data.txt");
     f_vel<<"time_stamp"<<" "\
          <<"linear_x"<<" "<<"linear_y"<<" "<<"linear_z"<<" "\
-         <<"angular_x"<<" "<<"angular_y"<<" "<<"angular_z"<<std::endl;
+         <<"angular_x"<<" "<<"angular_y"<<" "<<"angular_z"<<" "<<"vel_count"<<std::endl;
     f_vel.close();
 
     while (ros::ok())
